@@ -1,0 +1,35 @@
+﻿<Window x:Class="dxTestApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxre="http://schemas.devexpress.com/winfx/2008/xaml/richedit"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+
+
+
+    <Grid>
+        <dxre:RichEditControl CommandBarStyle="Ribbon">
+            <dxre:RichEditControl.RibbonActions>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Info_EncryptDocument}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Save}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_SaveAs}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_New}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Open}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Print}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_PrintPreview}"/>
+                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_QuickPrint}"/>
+                <dxb:InsertAction Index="0" ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_File_Common}">
+                    <dxb:BarButtonItem Content="Save" 
+                                       LargeGlyph="{dx:DXImageOffice2013 Image=Save_32x32.png}" 
+                                       Command="{Binding SaveCommand}">
+                    </dxb:BarButtonItem>
+                </dxb:InsertAction>
+
+            </dxre:RichEditControl.RibbonActions>
+        </dxre:RichEditControl>
+    </Grid>
+</Window>

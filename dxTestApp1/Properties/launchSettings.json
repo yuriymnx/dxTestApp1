@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "dxTestApp1": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
