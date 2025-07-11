@@ -9,26 +9,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
-
-
     <Grid>
-        <dxre:RichEditControl CommandBarStyle="Ribbon">
+        <dxre:RichEditControl CommandBarStyle="Ribbon" DocumentSource="{Binding DocumentSource}">
             <dxre:RichEditControl.RibbonActions>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Info_EncryptDocument}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Save}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_SaveAs}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_New}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Open}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_Print}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_PrintPreview}"/>
-                <dxb:RemoveAction ElementName="{x:Static dxre:DefaultBarItemNames.RibbonItem_File_Common_QuickPrint}"/>
                 <dxb:InsertAction Index="0" ContainerName="{x:Static dxre:DefaultBarItemNames.RibbonGroup_File_Common}">
-                    <dxb:BarButtonItem Content="Save" 
-                                       LargeGlyph="{dx:DXImageOffice2013 Image=Save_32x32.png}" 
-                                       Command="{Binding SaveCommand}">
+                    <dxb:BarButtonItem Content="Save"
+                                       LargeGlyph="{dx:DXImageOffice2013 Image=Save_32x32.png}"
+                                       Command="{Binding SaveCommand}"
+                                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=dxre:RichEditControl}}">
                     </dxb:BarButtonItem>
                 </dxb:InsertAction>
-
             </dxre:RichEditControl.RibbonActions>
         </dxre:RichEditControl>
     </Grid>
