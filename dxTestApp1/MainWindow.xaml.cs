@@ -19,7 +19,6 @@ namespace dxTestApp1
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
         }
     }
 }
