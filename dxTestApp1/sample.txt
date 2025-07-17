@@ -98,5 +98,39 @@ using System.Reflection;
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include=""{project}.resx"" />
-    <Compile Include=
+    <Compile Include=""AssemblyInfo.cs"" />
+  </ItemGroup>
+</Project>
+");
+
+            // 4. Сборка (опционально)
+            //BuildProject(csprojPath);
+        }
+
+        Console.WriteLine("Всё готово.");
+    }
+
+    static void BuildProject(string csprojPath)
+    {
+        var psi = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            Arguments = $"build \"{csprojPath}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = Process.Start(psi);
+        process!.WaitForExit();
+
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+
+        Console.WriteLine(output);
+        if (!string.IsNullOrWhiteSpace(error))
+            Console.WriteLine($"Ошибка: {error}");
+    }
+}
 
