@@ -28,61 +28,75 @@ using System.Reflection;
 
 
 using System.Xml.Linq;
-using System.Collections.Generic;
-using System.IO;
+using System.Text;
+using System.Diagnostics;
 
-string inputPath = "merged_resources.xml";
-var doc = XDocument.Load(inputPath);
-var grouped = new Dictionary<string, List<XElement>>();
-
-foreach (var data in doc.Descendants("data"))
+class Program
 {
-    var name = data.Attribute("name")?.Value;
-    if (name == null) continue;
+    const string InputFile = "merged_resources.xml";
+    const string OutputDir = "GeneratedProjects";
+    const string TargetFramework = "net40";
+    const string Version = "22.2.0.0";
 
-    var project = name.Split('.')[0]; // ProjectA, ProjectB, и т.д.
-    if (!grouped.ContainsKey(project))
-        grouped[project] = new List<XElement>();
+    static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
 
-    grouped[project].Add(data);
-}
+        if (!File.Exists(InputFile))
+        {
+            Console.WriteLine($"Файл не найден: {InputFile}");
+            return;
+        }
 
-foreach (var kv in grouped)
-{
-    var projectName = kv.Key;
-    var elements = kv.Value;
+        Console.WriteLine("Загрузка XML...");
+        var doc = XDocument.Load(InputFile);
 
-    var resx = new XDocument(
-        new XElement("root",
-            elements
-        )
-    );
+        var grouped = doc.Descendants("data")
+            .Where(x => x.Attribute("name") != null)
+            .GroupBy(x => x.Attribute("name")!.Value.Split('.')[0]);
 
-    Directory.CreateDirectory(projectName);
-    File.WriteAllText(Path.Combine(projectName, $"{projectName}.resx"), resx.ToString());
+        Directory.CreateDirectory(OutputDir);
 
-    File.WriteAllText(Path.Combine(projectName, "AssemblyInfo.cs"), $@"
+        foreach (var group in grouped)
+        {
+            var project = group.Key;
+            var projectDir = Path.Combine(OutputDir, project);
+            Directory.CreateDirectory(projectDir);
+
+            Console.WriteLine($"Генерация проекта: {project}");
+
+            // 1. .resx
+            var resxPath = Path.Combine(projectDir, $"{project}.resx");
+            var resxDoc = new XDocument(
+                new XDeclaration("1.0", "utf-8", null),
+                new XElement("root", group)
+            );
+            resxDoc.Save(resxPath);
+
+            // 2. AssemblyInfo.cs
+            var asmInfoPath = Path.Combine(projectDir, "AssemblyInfo.cs");
+            File.WriteAllText(asmInfoPath, $@"
 using System.Reflection;
-[assembly: AssemblyTitle(""{projectName}"")]
-[assembly: AssemblyDescription("""")]
-[assembly: AssemblyCompany(""YourCompany"")]
-[assembly: AssemblyProduct(""{projectName}"")]
-[assembly: AssemblyCopyright(""Copyright © 2025"")]
-[assembly: AssemblyVersion(""1.0.0.0"")]
+
+[assembly: AssemblyTitle(""{project}"")]
+[assembly: AssemblyDescription(null)]
+[assembly: AssemblyCompany(""Developer Express Inc."")]
+[assembly: AssemblyProduct(""{project}"")]
+[assembly: AssemblyCopyright(""Copyright © 2000-2022 Developer Express Inc."")]
+[assembly: AssemblyTrademark(null)]
+[assembly: AssemblyVersion(""{Version}"")]
 ");
 
-    File.WriteAllText(Path.Combine(projectName, $"{projectName}.csproj"), $@"
+            // 3. .csproj
+            var csprojPath = Path.Combine(projectDir, $"{project}.csproj");
+            File.WriteAllText(csprojPath, $@"
 <Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
-    <TargetFramework>net40</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>{projectName}</AssemblyName>
-    <OutputType>Library</OutputType>
+    <AssemblyName>{project}</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>{TargetFramework}</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include=""{projectName}.resx"" />
-    <Compile Include=""AssemblyInfo.cs"" />
-  </ItemGroup>
-</Project>
-");
-}
+    <EmbeddedResource Include=""{project}.resx"" />
+    <Compile Include=
+
