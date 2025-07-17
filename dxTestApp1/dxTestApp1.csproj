@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="sample.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="sample.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DevExpress.Wpf.RichEdit" Version="22.2.15" />
     <PackageReference Include="DevExpress.Wpf.Spreadsheet" Version="22.2.15" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
