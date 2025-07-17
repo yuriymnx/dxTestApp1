@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>DevExpress.Dialogs.v22.2.Core</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>11.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup />
+</Project>
+
+using System.Reflection;
+
+[assembly: AssemblyTitle("DevExpress.Dialogs.Core")]
+[assembly: AssemblyDescription(null)]
+[assembly: AssemblyCompany("Developer Express Inc.")]
+[assembly: AssemblyProduct("DevExpress.Dialogs.Core")]
+[assembly: AssemblyCopyright("Copyright © 2000-2022 Developer Express Inc.")]
+[assembly: AssemblyTrademark(null)]
+[assembly: AssemblyVersion("22.2.0.0")]
+
+
+using System.Xml.Linq;
+using System.Collections.Generic;
+using System.IO;
+
+string inputPath = "merged_resources.xml";
+var doc = XDocument.Load(inputPath);
+var grouped = new Dictionary<string, List<XElement>>();
+
+foreach (var data in doc.Descendants("data"))
+{
+    var name = data.Attribute("name")?.Value;
+    if (name == null) continue;
+
+    var project = name.Split('.')[0]; // ProjectA, ProjectB, и т.д.
+    if (!grouped.ContainsKey(project))
+        grouped[project] = new List<XElement>();
+
+    grouped[project].Add(data);
+}
+
+foreach (var kv in grouped)
+{
+    var projectName = kv.Key;
+    var elements = kv.Value;
+
+    var resx = new XDocument(
+        new XElement("root",
+            elements
+        )
+    );
+
+    Directory.CreateDirectory(projectName);
+    File.WriteAllText(Path.Combine(projectName, $"{projectName}.resx"), resx.ToString());
+
+    File.WriteAllText(Path.Combine(projectName, "AssemblyInfo.cs"), $@"
+using System.Reflection;
+[assembly: AssemblyTitle(""{projectName}"")]
+[assembly: AssemblyDescription("""")]
+[assembly: AssemblyCompany(""YourCompany"")]
+[assembly: AssemblyProduct(""{projectName}"")]
+[assembly: AssemblyCopyright(""Copyright © 2025"")]
+[assembly: AssemblyVersion(""1.0.0.0"")]
+");
+
+    File.WriteAllText(Path.Combine(projectName, $"{projectName}.csproj"), $@"
+<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>{projectName}</AssemblyName>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include=""{projectName}.resx"" />
+    <Compile Include=""AssemblyInfo.cs"" />
+  </ItemGroup>
+</Project>
+");
+}
